@@ -1,6 +1,5 @@
 const Patient = require('../models/Patient.js');
 
-
 // Show the Add Patient Form Page (GET)
 exports.showAddPatientForm = (req, res) => {
   try {
@@ -11,8 +10,7 @@ exports.showAddPatientForm = (req, res) => {
   }
 };
 
-
-// Handle Add Patient Form Submission 
+// Handle Add Patient Form Submission (POST)
 exports.addPatient = async (req, res) => {
   try {
     const { name, dob, gender, phone, email, address, medicalHistory } = req.body;
@@ -27,13 +25,24 @@ exports.addPatient = async (req, res) => {
       medicalHistory,
     });
 
-    const savedPatient = await newPatient.save();
+    await newPatient.save();
 
-    //  Redirect to homepage or a patient list page after successful save
-    res.redirect('/'); 
-
+    // Redirect to homepage or a patient list page after successful save
+    res.redirect('/');
   } catch (error) {
     console.error('Error adding patient:', error);
     res.status(500).send('Failed to add patient: ' + error.message);
+  }
+};
+
+// Show Patients on Homepage (GET)
+exports.showedPatients = async (req, res) => {
+  try {
+    const patients = await Patient.find();
+    const activeCount = patients.length;
+    res.render('index', { patients, activeCount }); // Make sure your 'index.ejs' uses these variables
+  } catch (error) {
+    console.error('Server error:', error);
+    res.status(500).send('Server error');
   }
 };
